@@ -1,0 +1,34 @@
+<%- include('header') %>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="login.css">
+<body>
+<div class="login-box">
+    <h2>New Route</h2>
+    <form method="post" action="/newroute" autocomplete="off">
+      <div class="user-box">
+        <input type="text" name="routeno" required="true">
+        <label>Route No</label>
+      </div>
+      <div class="user-box">
+        <input type="text" name="startingpoint" required="true">
+        <label>Starting Point</label>
+      </div>
+      <div class="user-box">
+        <input type="text" name="boardingpoints" required="true">
+        <label>Boarding Points</label>
+      </div>
+      <div class="user-box">
+        <input type="text" name="maplink" required="true">
+        <label>Map Link</label>
+      </div>
+     <button id="login-submit" type="submit" name="action" name="submit">  submit 
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+     </button>
+    </form>
+   
+  </div>
+</body>
+</html>
