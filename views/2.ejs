@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Animate a point along a route</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+.rounded-rect {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 50px -25px black;
+    }
+
+    .flex-center {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .flex-center.left {
+        left: 0px;
+    }
+
+    .flex-center.right {
+        right: 0px;
+    }
+
+    .sidebar-content {
+        position: absolute;
+        width: 95%;
+        height: 95%;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 32px;
+        color: gray;
+    }
+
+    .sidebar-toggle {
+        position: absolute;
+        width: 1.3em;
+        height: 1.3em;
+        overflow: visible;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sidebar-toggle.left {
+        right: -1.5em;
+    }
+
+    .sidebar-toggle.right {
+        left: -1.5em;
+    }
+
+    .sidebar-toggle:hover {
+        color: #0aa1cf;
+        cursor: pointer;
+    }
+
+    .sidebar {
+        transition: transform 1s;
+        z-index: 1;
+        width: 300px;
+        height: 100%;
+    }
+
+    /*
+  The sidebar styling has them "expanded" by default, we use CSS transforms to push them offscreen
+  The toggleSidebar() function removes this class from the element in order to expand it.
+*/
+    .left.collapsed {
+        transform: translateX(-295px);
+    }
+
+    .right.collapsed {
+        transform: translateX(295px);
+    }
+    .card {
+      border:none;
+      padding: 20px;
+      width: 200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .content{
+        font-size: large;
+        font-weight: bold;
+        margin-bottom: 200px;
+    }
+    
+    
+    .card img {
+      max-width: 70%;
+      border-radius: 50%;
+      
+    }
+    
+    .contact-info {
+      margin-top: 15px;
+    }
+    
+    .contact-info a {
+      text-decoration: none;
+      color:black;
+      margin: 5px;
+    }
+</style>
+</head>
+<body>
+<style>
+    body {
+margin: 0;
+padding: 0;
+}
+#map {
+position: absolute;
+top: 0;
+bottom: 0;
+width: 100%;
+}
+.marker {
+background-image: url('img1.jpeg');
+background-size: cover;
+width: 50px;
+height: 50px;
+border-radius: 10%;
+cursor: pointer;
+}
+.mapboxgl-popup {
+max-width: 200px;
+}
+.mapboxgl-popup-content {
+text-align: center;
+font-family: 'Open Sans', sans-serif;
+}
+</style>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+<div id="map">
+
+    <div id="right" class="sidebar flex-center right collapsed">
+        <div class="sidebar-content rounded-rect flex-center">
+            <div class="card">
+                <img src="/images/seeshu.jpg" alt="Profile Photo" style="margin-bottom: 20px;">
+                <div class="content">  
+                    <pre>B. Seeshuraj</pre>
+                    <pre>2020 - 2024</pre>
+                    <pre >St.Joseph's College</pre>
+                    <pre> Of Engineering</pre>
+                </div>
+             
+                <div class="contact-info">
+                    <a href="mailto:seeshu12@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.linkedin.com/in/seeshuraj-b-051260122"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/seeshuraj"><i class="fab fa-github"></i></a>
+                    <a href="tel:+917299955537"><i class="fas fa-phone"></i></a>
+                </div>
+            </div>
+            <div class="sidebar-toggle rounded-rect right" onclick="toggleSidebar('right')">
+                &larr;
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoic3Rqb3NlcGhidXMiLCJhIjoiY2xsMGx4Y245MmVkYzNscjB5bjlsaDQ5NSJ9.-yxL0BtAlyPV0dJOYMLM8Q';
+    
+
+    // Chennai
+    const origin = [80.26735231402421,13.086910317092457];
+
+    // Australia
+    const destination = [144.915671528131,-37.74512841928364];
+
+    
+    const map = new mapboxgl.Map({
+        container: 'map',
+        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio,
+        style: 'mapbox://styles/mapbox/dark-v11',
+        center: origin,
+        zoom: 6,
+        pitch: 40
+    });
+
+    // First animation: Zoom in to target location
+      map.flyTo({
+        center: origin,
+        zoom: 10,
+        speed: 1.5,
+        easing: (t) => t,
+        essential: true
+      });
+
+
+    // A simple line from origin to destination.
+    const route = {
+        'type': 'FeatureCollection',
+        'features': [
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [origin, destination]
+                }
+            }
+        ]
+    };
+
+    // A single point that animates along the route.
+    // Coordinates are initially set to origin.
+    const point = {
+        'type': 'FeatureCollection',
+        'features': [
+            {
+                'type': 'Feature',
+                'properties': {},
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': origin
+                }
+            }
+        ]
+    };
+
+    // Calculate the distance in kilometers between route start/end point.
+const lineDistance = turf.length(route.features[0]);
+
+const arc = [];
+
+// Number of steps to use in the arc and animation, more steps means
+// a smoother arc and animation, but too many steps will result in a
+// low frame rate
+const steps = 500;
+
+// Draw an arc between the `origin` & `destination` of the two points
+for (let i = 0; i < lineDistance; i += lineDistance / steps) {
+    const segment = turf.along(route.features[0], i);
+    arc.push(segment.geometry.coordinates);
+}
+
+// Update the route with calculated arc coordinates
+route.features[0].geometry.coordinates = arc;
+
+// Used to increment the value of the point measurement against the route.
+let counter = 0;
+
+map.on('load', () => {
+    // Add a source and layer displaying a point which will be animated in a circle.
+    map.addSource('route', {
+        'type': 'geojson',
+        'data': route
+    });
+
+    map.addSource('point', {
+        'type': 'geojson',
+        'data': point
+    });
+
+    map.addLayer({
+        'id': 'route',
+        'source': 'route',
+        'type': 'line',
+        'paint': {
+            'line-width': 3,
+            'line-color': '#007cbf'
+        }
+    });
+
+    map.addLayer({
+        'id': 'point',
+        'source': 'point',
+        'type': 'symbol',
+        'layout': {
+            'icon-image': 'airport',
+            'icon-size': 2.5,
+            'icon-rotate': ['get', 'bearing'],
+            'icon-rotation-alignment': 'map',
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true
+        }
+    });
+
+    
+
+    function animate() {
+        const start =
+            route.features[0].geometry.coordinates[
+                counter >= steps ? counter - 1 : counter
+            ];
+        const end =
+            route.features[0].geometry.coordinates[
+                counter >= steps ? counter : counter + 1
+            ];
+        if (!start || !end) {
+            return;
+        }
+        point.features[0].geometry.coordinates =
+            route.features[0].geometry.coordinates[counter];
+        point.features[0].properties.bearing = turf.bearing(
+            turf.point(start),
+            turf.point(end)
+        );
+        map.getSource('point').setData(point);
+
+        if (counter < steps) {
+            requestAnimationFrame(animate);
+        }
+        if(counter<50){
+            counter = counter + 1;
+        }
+        else if(counter<450){
+            counter = counter + 5;
+        }
+        else{
+            counter = counter + 1;
+        }
+        //console.log(counter);
+    }
+
+    // Zoom to fit the route initially
+    const bounds = new mapboxgl.LngLatBounds(origin, destination);
+    map.fitBounds(bounds, {
+        padding: { top: 50, bottom: 50, left: 50, right: 50 }
+    });
+
+    // Start the animation
+    animate(counter);
+});
+
+
+        setTimeout(() => {
+            map.flyTo({
+                center: destination,
+                zoom: 8, // Adjust the zoom level as needed
+                speed: 0.8,
+                easing: (t) => t,
+                essential: true
+            });
+        }, 3500); // Delay in milliseconds, adjust as needed
+
+
+        const geojson = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: destination
+            },
+            properties: {
+              title: 'SEESURAJ B',
+              description: 'instagram.com/seeshuraj',
+              description1: 'linkedin.com/in/seeshuraj-b-051260122'
+            }
+          }
+        ]
+      };
+
+ 
+// add markers to map
+for (const feature of geojson.features) {
+// create a HTML element for each feature
+const el = document.createElement('div');
+el.className = 'marker';
+ 
+// make a marker for each feature and add it to the map
+new mapboxgl.Marker(el)
+.setLngLat(feature.geometry.coordinates)
+.setPopup(
+new mapboxgl.Popup({ offset: 50 }) // add popups
+.setHTML(
+`<h3>${feature.properties.title}</h3><a href="https://www.linkedin.com/in/seeshuraj-b-051260122/" target="blank" >${feature.properties.description1}</a><br><a href="https://www.instagram.com/_seeshu/" target="_blank">${feature.properties.description}</a>`
+)
+)
+.addTo(map);
+}
+
+function toggleSidebar(id) {
+        const elem = document.getElementById(id);
+        // Add or remove the 'collapsed' CSS class from the sidebar element.
+        // Returns boolean "true" or "false" whether 'collapsed' is in the class list.
+        const collapsed = elem.classList.toggle('collapsed');
+        const padding = {};
+        // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
+        padding[id] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
+        // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
+        map.easeTo({
+            padding: padding,
+            duration: 1000 // In ms. This matches the CSS transition duration property.
+        });
+    }
+
+    map.on('load', () => {
+    setTimeout(() => {
+        toggleSidebar('right');
+    }, 7000); // Adjust the delay in milliseconds as needed
+});
+const size = 200;
+ 
+// This implements `StyleImageInterface`
+// to draw a pulsing dot icon on the map.
+const pulsingDot = {
+width: size,
+height: size,
+data: new Uint8Array(size * size * 4),
+ 
+// When the layer is added to the map,
+// get the rendering context for the map canvas.
+onAdd: function () {
+const canvas = document.createElement('canvas');
+canvas.width = this.width;
+canvas.height = this.height;
+this.context = canvas.getContext('2d');
+},
+ 
+// Call once before every frame where the icon will be used.
+render: function () {
+const duration = 1000;
+const t = (performance.now() % duration) / duration;
+ 
+const radius = (size / 4) * 0.3;
+const outerRadius = (size / 2) * 0.7 * t + radius;
+const context = this.context;
+ 
+// Draw the outer circle.
+context.clearRect(0, 0, this.width, this.height);
+context.beginPath();
+context.arc(
+this.width / 2,
+this.height / 2,
+outerRadius,
+0,
+Math.PI * 2
+);
+context.fillStyle = `rgba(255, 200, 200, ${1 - t})`;
+context.fill();
+ 
+// Draw the inner circle.
+context.beginPath();
+context.arc(
+this.width / 2,
+this.height / 2,
+radius,
+0,
+Math.PI * 2
+);
+context.fillStyle = 'rgba(255, 100, 100, 1)';
+context.strokeStyle = 'white';
+context.lineWidth = 2 + 4 * (1 - t);
+context.fill();
+context.stroke();
+ 
+// Update this image's data with data from the canvas.
+this.data = context.getImageData(
+0,
+0,
+this.width,
+this.height
+).data;
+ 
+// Continuously repaint the map, resulting
+// in the smooth animation of the dot.
+map.triggerRepaint();
+ 
+// Return `true` to let the map know that the image was updated.
+return true;
+}
+};
+ 
+map.on('load', () => {
+map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
+ 
+map.addSource('dot-point', {
+'type': 'geojson',
+'data': {
+'type': 'FeatureCollection',
+'features': [
+{
+'type': 'Feature',
+'geometry': {
+'type': 'Point',
+'coordinates': destination // icon position [lng, lat]
+}
+}
+]
+}
+});
+map.addLayer({
+'id': 'layer-with-pulsing-dot',
+'type': 'symbol',
+'source': 'dot-point',
+'layout': {
+'icon-image': 'pulsing-dot'
+}
+});
+});
+ 
+
+</script>
+
+</body>
+</html>

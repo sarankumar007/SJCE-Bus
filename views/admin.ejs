@@ -1,0 +1,196 @@
+<%- include("header"); %>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<body>
+  <div class="wrapper">
+    <nav>
+      <input type="checkbox" id="show-search">
+      <input type="checkbox" id="show-menu">
+      <label for="show-menu" class="menu-icon"><i class="fas fa-bars"></i></label>
+      <div class="content" >
+        <ul class="links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/login">Admin</a></li>
+        </ul>
+      </div>
+      <div class="content">
+      <div class="logo"><a href="https://stjosephs.ac.in/index.html"><img  height=50px width=130% src="/images/buslogo-title.png"></a></div>
+      </div>
+      
+    
+       
+       <label for="show-search" class="search-icon"><i onclick="resetting()" class="fas fa-search"></i></label>
+        <form action="#tables" class="search-box">
+          <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Type your stop to search..." required>
+        </form>
+       
+     
+    
+       
+     
+    </nav>
+  </div>
+    
+  <!--  <p class="yellow">St.JOSEPH'S COLLEGE OF ENGINEERING </p>
+     <p class="pink"><i>-you choose we do it</i></p>--> 
+   
+ 
+    <form  action="/admin" method="post">
+    <table class="container">
+        <thead >
+            <tr>
+                <th colspan="5"><h1>Bus Routes</h1></th>
+            </tr>
+            <tr>
+                <th><h1>Bus No</h1></th>
+                <th><h1>Starting Point</h1></th>
+                <th><h1>Boarding Points</h1></th>
+                <th><h1 style="display: none;" id="del">Del</h1></th>
+                <th><h1 style="display: none;" id="edi">Edit</h1></th>
+                
+            </tr>
+           </thead>
+       <tbody id="myTable">
+        
+        <% arrayOfDatas.forEach(element => {  %>
+            <tr  >
+                <td><%=element.Route_No%></td>
+                <td><%=element.Starting_Point%></td>
+                <td><% element.Boarding_Points.forEach(element => { %>
+                    <li ><%= element %></li>
+                  <%  }); %> </td> 
+                <td ><input class="checkboxes" style="display: none;" type="checkbox" name="deleting" value="<%= element._id %>"></td>
+                <td><button class="edits" style="display: none;"  type="submit" name="editbutton" value=<%= element._id%>><span class="material-icons" >edit</span></button></td>
+             </tr>
+            
+        <%  }); %> 
+       
+    
+       </tbody>
+    </table>
+    <button id="buttonSection3" style="display: none;" type="submit" name="but_opt" value="Remove">Selecetd datas will be removed from database.
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span></button>
+     </form>
+    <div id="buttonSection1">
+     
+        <button type="submit" class="tarbut" name="but_opt" value="delete" onclick="checkbox()">Delete
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <button type="submit" class="tarbut" name="but_opt" value="edit" onclick="routeEdit()">Edit
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    
+   
+        <form action="/admin" method="post">
+            <button type="submit" class="tarbut" name="but_opt" value="reset">Reset
+                <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+                
+            </button>
+        </form>
+        <form action="/admin" method="post">
+                <button type="submit" class="tarbut" name="but_opt" value="newroute">Add new route
+                    <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+                </button>
+        </form>
+ 
+    </div>
+    <div id="buttonSection2"  style="display: none;">
+    <button onclick="location.reload()">Go Back
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span></button>
+    </div >
+
+    <script>
+        function checkbox(){
+           let checkdatas= document.querySelectorAll(".checkboxes");
+           document.getElementById("del").style.display="inline-block";
+           checkdatas.forEach((ele)=>{
+            ele.style.display="inline-block";
+           });
+           document.getElementById("buttonSection1").style.display="none";
+           document.getElementById("buttonSection2").style.display="block";
+           document.getElementById("buttonSection3").style.display="block";
+        }
+
+        function routeEdit(){
+          let edit= document.querySelectorAll(".edits");
+          document.getElementById("edi").style.display="inline-block";
+          edit.forEach((ele)=>{
+            ele.style.display="inline-block";
+           });
+           document.getElementById("buttonSection1").style.display="none";
+           document.getElementById("buttonSection2").style.display="block";
+        }
+
+
+    </script>
+    <footer>
+        <div>
+            <h3>ADDRESS</h3>
+            <p>
+                St.Joseph's College Of Engineering<br>
+                    OMR Chennai-119.
+            </p>
+        </div>
+        <div>
+            <h3>PHONE</h3>
+            <p>
+            Phone:044 - 24501060,24501449<br>
+            Extn.5560,5561,5563,5564<br>
+                   Fax:044 - 2450 0861
+            </p>
+        </div>
+        <div>
+            <h3>EMAIL</h3>
+            <p>
+            jprstjosephs@stjosephs.ac.in<br>
+            bus@stjosephs.ac.in
+            </p>
+        </div>
+    </footer> 
+    <script>
+
+function resetting(){
+              document.getElementById("myInput").value='';
+              myFunction();
+            }
+
+        function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[2];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+      </script> 
+    
+</body>
+</html>

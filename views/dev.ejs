@@ -1,0 +1,204 @@
+<%- include("header"); %>
+
+
+<body>
+  <style>
+    body{
+      background-color:#1F2739;
+    }
+    #info{
+      margin:150px 80px 130px;
+     
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 50px;
+    
+    }
+    #info .three{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 50px;
+      justify-content: space-evenly;
+    }
+    .card {
+      border: 1px solid #ccc;
+      background-color: white;
+      color:#333;
+      border-radius: 5%;
+      padding: 20px;
+      padding-bottom: 0%;
+      width: 300px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .card img {
+      max-width: 60%;
+      border-radius: 50%;
+    }
+    
+    .contact-info {
+      margin-top: 15px;
+      margin-bottom: 0%;
+      padding-bottom: 0%;
+    }
+    
+    .contact-info a {
+      text-decoration: none;
+      color: #333;
+      margin: 5px;
+    }
+    .contentinfo{
+      font-size: large;
+      font-weight: bold;
+    }
+    .contact-info{
+      display: flex;
+      justify-content: space-between;
+    }
+    .contact-info a:hover{
+      zoom: 135%;
+
+    }
+
+    @media  screen and (max-width:480px) {
+  #info
+  {
+    margin:150px 0px 90px;
+  }
+
+ }
+    
+    
+  </style>
+
+
+
+    <div class="wrapper" style="top:0px;">
+      <nav>
+        <input type="checkbox" id="show-search">
+        <input type="checkbox" id="show-menu">
+        <label for="show-menu" class="menu-icon"><i class="fas fa-bars"></i></label>
+        
+        <div class="content">
+        <div class="logo"><a href="https://stjosephs.ac.in/index.html"><img  height=50px width=130% src="/images/buslogo-title.png"></a></div>
+        </div>
+        <div class="content" >
+          <ul class="links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/login">Admin</a></li>
+          </ul>
+        </div>
+   
+      </nav>
+    </div>
+
+    <div id="info">
+      <div class="three">
+        <div class="card">
+          <img src="./images/sajhan.jpg" alt="Profile Photo" style="margin-bottom: 20px;">
+          <div class="contentinfo">  
+              <pre>M. Shajan</pre>
+              <pre>2020 - 2024</pre>
+              <pre >St.Joseph's College</pre>
+              <pre> Of Engineering</pre>
+          </div>
+        
+          <div class="contact-info">
+              <a href="mailto:shajanmicheal7@gmail.com"><i class="fas fa-envelope fa-lg"></i></a>
+              <a href="https://www.linkedin.com/in/shajanm/"><i class="fab fa-linkedin fa-lg"></i></a>
+              <a href="https://github.com/shajan-7/"><i class="fab fa-github fa-lg"></i></a>
+              <a href="tel:+916374292340"><i class="fas fa-phone fa-lg"></i></a>
+              <a href="/dev/1"><i class="fa fa-info fa-lg" aria-hidden="true"></i></a>
+          </div>
+                </div>
+        <div class="card"> 
+          <img src="./images/seeshu.jpg" alt="Profile Photo" style="margin-bottom: 20px;">
+          <div class="contentinfo">  
+              <pre>B. Seeshuraj</pre>
+              <pre>2020 - 2024</pre>
+              <pre >St.Joseph's College</pre>
+              <pre> Of Engineering</pre>
+          </div>
+        
+          <div class="contact-info">
+              <a href="mailto:seeshu12@gmail.com"><i class="fas fa-envelope fa-lg"></i></a>
+              <a href="https://www.linkedin.com/in/seeshuraj-b-051260122"><i class="fab fa-linkedin fa-lg"></i></a>
+              <a href="https://github.com/seeshuraj"><i class="fab fa-github fa-lg"></i></a>
+              <a href="tel:+917299955537"><i class="fas fa-phone fa-lg"></i></a>
+              <a href="/dev/2"><i class="fa fa-info fa-lg" aria-hidden="true"></i></a>
+          </div>
+                </div>
+        <div class="card">
+          <img src="./images/saran.png" alt="Profile Photo" style="margin-bottom: 20px;">
+          <div class="contentinfo">  
+              <pre>R. Saran Kumar</pre>
+              <pre>2020 - 2024</pre>
+              <pre >St.Joseph's College</pre>
+              <pre> Of Engineering</pre>
+          </div>
+        
+          <div class="contact-info">
+              <a href="mailto:sarankumar.r0076@gmail.com"><i class="fas fa-envelope fa-lg"></i></a>
+              <a href="https://www.linkedin.com/in/saran-kumar-r-936b02203"><i class="fab fa-linkedin fa-lg"></i></a>
+              <a href="https://github.com/sarankumar007"><i class="fab fa-github fa-lg"></i></a>
+              <a href="tel:+918148700609"><i class="fas fa-phone fa-lg"></i></a>
+              <a href="/dev/3"><i class="fa fa-info fa-lg" aria-hidden="true"></i></a>
+          </div>
+                </div>
+        </div> 
+      <div class="three">
+      <div class="card">
+        <img src="./images/apsar.jpg" alt="Profile Photo" style="margin-bottom: 20px;">
+        <div class="contentinfo">  
+            <pre>M. Apsar</pre>
+            <pre>2021 - 2025</pre>
+            <pre >St.Joseph's College</pre>
+            <pre> Of Engineering</pre>
+        </div>
+     
+        <div class="contact-info">
+            <a href="mailto:m.apsar0786@gmail.com"><i class="fas fa-envelope fa-lg"></i></a>
+            <a href="https://www.linkedin.com/in/apsar-m-05713324ae"><i class="fab fa-linkedin fa-lg"></i></a>
+            <a href="https://github.com/Apsar7004"><i class="fab fa-github fa-lg"></i></a>
+            <a href="tel:+916382319523"><i class="fas fa-phone fa-lg"></i></a>
+            <a href="/dev/4"><i class="fa fa-info fa-lg" aria-hidden="true"></i></a>
+        </div>
+        </div>
+<div class="card">
+  <img src="./images/anto.jpg" alt="Profile Photo" style="margin-bottom: 20px;">
+  <div class="contentinfo">  
+      <pre>B. Anto Sam</pre>
+      <pre>2021 - 2025</pre>
+      <pre >St.Joseph's College</pre>
+      <pre> Of Engineering</pre>
+  </div>
+
+  <div class="contact-info">
+      <a href="mailto:antosam1109@gmail.com"><i class="fas fa-envelope fa-lg"></i></a>
+      <a href="https://www.linkedin.com/in/anto-sam-chandran-263513249"><i class="fab fa-linkedin fa-lg"></i></a>
+      <a href="https://github.com/Anto-Sam"><i class="fab fa-github fa-lg"></i></a>
+      <a href="tel:+917904898173"><i class="fas fa-phone fa-lg"></i></a>
+      <a href="/dev/5"><i class="fa fa-info fa-lg" aria-hidden="true"></i></a>
+  </div>
+        </div>
+
+</div>
+
+
+    </div>
+
+<footer >
+    
+    <div>
+        <h3>CONTACT</h3>
+        <p>
+        Phone:044 - 24501060,24501449<br>
+        Extn.5560,5561,5563,5564<br>
+               Fax:044 - 2450 0861
+        </p>
+    </div>
+</footer>
+</body>
+</html>

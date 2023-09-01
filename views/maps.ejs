@@ -1,0 +1,255 @@
+<%- include("header"); %>
+ 
+<style>
+  /* body {
+  margin: 0;
+  padding: 0;
+  } */
+  /* #map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  } */
+  #menu {
+        position: absolute;
+        background: #efefef;
+        margin: 80px 10px;
+        font-family: 'Open Sans', sans-serif;
+    }
+  .marker {
+  background-image: url('/images/flagvideo12.gif');
+  background-size: cover;
+  width: 100px;
+  height: 100px;
+  border-radius: 10%;
+  cursor: pointer;
+  }
+  .mapboxgl-popup {
+  max-width: 200px;
+  }
+  .mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+  }
+  </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <nav>
+        <input type="checkbox" id="show-search">
+        <input type="checkbox" id="show-menu">
+        <label for="show-menu" class="menu-icon"><i class="fas fa-bars"></i></label>
+        
+        <div class="content">
+        <div class="logo"><a href="https://stjosephs.ac.in/index.html"><img  height=50px width=130% src="/images/buslogo-title.png"></a></div>
+        </div>
+        <div class="content" >
+          <ul class="links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/login">Admin</a></li>
+          </ul>
+        </div>
+   
+      </nav>
+    </div>
+
+<!--  <div id="stoppingPoints">
+              <ul><% arrayOfDatas.Boarding_Points.forEach(element => { %>
+               <li><%= element %></li>
+               <%  }); %> </ul>   
+              </div>        -->  
+  <div id="container"><div id="map">
+
+  </div>
+</div>
+   
+
+   <footer id="footer">
+    
+    <div>
+        <h3>CONTACT</h3>
+        <p>
+        Phone:044 - 24501060,24501449<br>
+        Extn.5560,5561,5563,5564<br>
+               Fax:044 - 2450 0861
+        </p>
+    </div>
+</footer>
+
+
+<script>
+  
+  let points='<%= arrayOfDatas.Boarding_Points %>';
+  points=points.split(",")
+
+  mapboxgl.accessToken = 'pk.eyJ1Ijoic3Rqb3NlcGhidXMiLCJhIjoiY2xsMGx4Y245MmVkYzNscjB5bjlsaDQ5NSJ9.-yxL0BtAlyPV0dJOYMLM8Q';
+   
+    const targetCenter = [80.27413582562168,13.083655045851259]; // Original center coordinates
+    const originalCenter = [80.2255125, 12.8618871]; // Target center coordinates
+    const targetZoom1 = 14; // Target zoom level
+    const originalZoom = 4; // Original zoom level
+    const targetZoom=13;
+
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: targetCenter,
+      zoom: targetZoom1
+    });
+
+  
+
+    // First animation: Zoom in to target location
+    map.on('load', () => {
+      map.flyTo({
+        center: targetCenter,
+        zoom: originalZoom,
+        speed: 1.5,
+        easing: (t) => t,
+        essential: true
+      });
+      
+      // Second animation: Zoom out to original location
+      setTimeout(() => {
+        map.flyTo({
+          center: originalCenter,
+          zoom: targetZoom,
+          speed: 1,
+          easing: (t) => t,
+          essential: true
+        });
+      }, 1500); // Adjust the delay as needed
+    });
+  
+
+    map.addControl(new mapboxgl.NavigationControl());
+
+        const geojson = {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [80.21710,12.87022]
+              },
+              properties: {
+                title: 'St.Joseph\'s College of Engineering Chennai',
+                description: 'You Choose We Do It'
+              }
+            }
+          ]
+        };
+  
+   
+  // add markers to map
+  for (const feature of geojson.features) {
+  // create a HTML element for each feature
+  const el = document.createElement('div');
+  el.className = 'marker';
+   
+  // make a marker for each feature and add it to the map
+  new mapboxgl.Marker(el)
+  .setLngLat(feature.geometry.coordinates)
+  .setPopup(
+  new mapboxgl.Popup({ offset: 25 }) // add popups
+  .setHTML(
+  `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
+  )
+  )
+  .addTo(map);
+  }
+
+    const routeUrl = 'https://api.mapbox.com/directions/v5/mapbox/driving/'+'<%=maplink%>'+'?alternatives=true&geometries=polyline6&language=en&overview=full&steps=true&access_token=' + mapboxgl.accessToken;
+
+        fetch(routeUrl)
+          .then(response => response.json())
+          .then(data => {
+            const routeCoordinates = decodePolyline(data.routes[0].geometry);
+
+            const givenWaypoints = data.waypoints;
+            console.log(givenWaypoints)
+
+            map.on('load', () => {
+              // Add the route line to the map
+              map.addLayer({
+                id: 'route',
+                type: 'line',
+                source: {
+                  type: 'geojson',
+                  data: {
+                    type: 'Feature',
+                    geometry: {
+                      type: 'LineString',
+                      coordinates: routeCoordinates
+                    },
+                    
+                  }
+                },
+                paint: {
+                  'line-color': '#f8354f',
+                  'line-width': 5,
+                  'line-opacity': 0.75,
+                
+                }
+              });
+              
+
+              // Add markers for given waypoints
+              i=0
+              givenWaypoints.forEach(function(waypoint){
+                const location = waypoint.location;
+                const name = points[i++]
+                new mapboxgl.Marker()
+                  .setLngLat(location)
+                  .setPopup(new mapboxgl.Popup().setText(name))
+                  .addTo(map);
+              });
+            });
+          })
+          .catch(error => console.error('Error fetching route:', error));
+
+          // Function to decode polyline6 geometry
+        function decodePolyline(encoded) {
+          const points = [];
+          let index = 0;
+          let lat = 0;
+          let lng = 0;
+
+          while (index < encoded.length) {
+            let b;
+            let shift = 0;
+            let result = 0;
+
+            do {
+              b = encoded.charCodeAt(index++) - 63;
+              result |= (b & 0x1f) << shift;
+              shift += 5;
+            } while (b >= 0x20);
+
+            const dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+
+            do {
+              b = encoded.charCodeAt(index++) - 63;
+              result |= (b & 0x1f) << shift;
+              shift += 5;
+            } while (b >= 0x20);
+
+            const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
+            lng += dlng;
+
+            points.push([lng / 1e6, lat / 1e6]);
+          }
+
+          return points;
+        }
+
+  </script>
+  </body>
+</html>

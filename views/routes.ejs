@@ -1,0 +1,178 @@
+<%- include("header"); %>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<body>
+  
+    <div class="wrapper">
+        <nav>
+          <input type="checkbox" id="show-search">
+          <input type="checkbox" id="show-menu">
+          <label for="show-menu" class="menu-icon"><i class="fas fa-bars"></i></label>
+          <div class="content" >
+            <ul class="links">
+              <li><a href="#tables">Home</a></li>
+              <li><a href="/login">Admin</a></li>
+            </ul>
+          </div>
+          <div class="content">
+          <div class="logo"><a href="https://stjosephs.ac.in/index.html"><img  height=50px width=130% src="/images/buslogo-title.png"></a></div>
+          </div>
+          
+        
+           
+           <label for="show-search" class="search-icon"><i onclick="resetting()" class="fas fa-search"></i></label>
+            <form action="#tables" class="search-box">
+              <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Type your stop to search..." required>
+            </form>
+           
+         
+        
+           
+         
+        </nav>
+      </div>
+    
+  <!--  <p class="yellow">St.JOSEPH'S COLLEGE OF ENGINEERING </p>
+     <p class="pink"><i>-you choose we do it</i></p>--> 
+   
+    <table class="container">
+      
+       
+        <br><br>
+        
+        
+        
+        <div class="slideshow-container">
+        
+        <div class="mySlides fade">
+          <div class="slide1"></div>
+          <!-- <img src="/images/bus1.jpeg" style="width:100%"> -->
+        </div>
+        
+        <div class="mySlides fade">
+          <div class="slide2"></div>
+          <!-- <img src="/images/bus2.jpeg" style="width:100%"> -->
+          
+        </div>
+        
+        <div class="mySlides fade">
+          <div class="slide3"></div>
+          <!-- <img src="/images/bus3.jpeg" style="width:100%"> -->
+          
+        </div>
+        
+        </div>
+        <br>
+        
+        <div style="text-align:center">
+          <span class="dot"></span> 
+          <span class="dot"></span> 
+          <span class="dot"></span> 
+        </div>
+        
+        <script>
+
+            function resetting(){
+              document.getElementById("myInput").value='';
+              myFunction();
+            }
+
+
+        let slideIndex = 0;
+        showSlides();
+        
+        function showSlides() {
+          let i;
+          let slides = document.getElementsByClassName("mySlides");
+          let dots = document.getElementsByClassName("dot");
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";  
+          }
+          slideIndex++;
+          if (slideIndex > slides.length) {slideIndex = 1}    
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+          }
+          slides[slideIndex-1].style.display = "block";  
+          dots[slideIndex-1].className += " active";
+          setTimeout(showSlides, 2000); // Change image every 2 seconds
+        }
+        </script>
+        <section id="tables">
+       <thead >
+        <tr>
+            <th colspan="4"><h1>Bus Routes</h1></th>
+        </tr>
+        <tr>
+            <th><h1>Bus No</h1></th>
+            <th><h1>Starting Point</h1></th>
+            <th><h1>Boarding Points</h1></th>
+            <th><h1 id="del">Map</h1></th>
+
+        </tr>
+       </thead>
+       <tbody id="myTable">
+        <form action="/map" method="post">
+        <% arrayOfDatas.forEach(element => {  %>
+            <tr>
+                <td><%=element.Route_No%></td>
+                <td><%=element.Starting_Point%></td>
+                <td><li id="routetitle"><%=element.Starting_Point%></li><% element.Boarding_Points.forEach(element => { %>
+                 <li><%= element %></li>
+               <%  }); %> </td>  
+                <td><button type="submit" name="mapbutton" value=<%= element._id%>><span class="material-icons" >place</span></button></td>
+             </tr>
+            
+        <%  }); %> 
+      </form>
+       </tbody>
+      </section>
+    </table>   
+    <footer>
+      <div>
+          <h3>ADDRESS</h3>
+          <p>
+              St.Joseph's College Of Engineering<br>
+                  OMR Chennai-119.
+          </p>
+      </div>
+      <div>
+          <h3>PHONE</h3>
+          <p>
+          Phone:044 - 24501060,24501449<br>
+          Extn.5560,5561,5563,5564<br>
+                 Fax:044 - 2450 0861
+          </p>
+      </div>
+      <div>
+          <h3>EMAIL</h3>
+          <p>
+          jprstjosephs@stjosephs.ac.in<br>
+          bus@stjosephs.ac.in
+          </p>
+      </div>
+  </footer>
+ <a id="developedby" href="/developedby">Developed By</a>
+
+  <script>
+    function myFunction() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[2];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+}
+  </script> 
+
+</body>
+</html>
